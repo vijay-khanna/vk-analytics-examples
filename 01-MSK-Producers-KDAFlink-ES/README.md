@@ -54,14 +54,6 @@ echo -e " * * \e[106m ...The Key Name to be created is... : "$PROJECT_NAME-sshke
 ### aws ec2 delete-key-pair --key-name $PROJECT_NAME-sshkey        // Take care while using this command, as it will delete the old keypair
 aws ec2 import-key-pair --key-name $PROJECT_NAME-sshkey --public-key-material file://~/environment/temp_ssh_keys/$PROJECT_NAME-sshkey.key.pub
 
-
-
-
-
-
-
-
-
 ```
 
 ### Deploy MSK Stack:
@@ -93,7 +85,8 @@ aws cloudformation create-stack --stack-name $CFN_TEMPLATE_NAME --template-body 
 
 
 ```
-dsds
+## Testing the MSK Simple Producer and Consumer commands
+
 
 
 
