@@ -123,17 +123,47 @@ $KafkaClientEC2InstanceSsh -i ~/environment/temp_ssh_keys/$PROJECT_NAME-sshkey.k
 ### !!!! This might have some issues, as Cloud9 can change the Public IP after reboot. In that case manually allow Cloud9's Public IP access to Kafka Client's Security Group.
 
 ### !!!! Copy paste the values of these commands from Cloud9 to the Kafka-Client-SSH Terminal.. this is one option.. or we can use Parameter Store
+##echo -e " * * \e[106m echo export MSKClusterArn=$MSKClusterArn"\e[0m \n"
+##echo -e " * * \e[106m ...ACCOUNT_ID... : "$ACCOUNT_ID"\e[0m \n"
+
 echo $(echo export MSKClusterArn=$MSKClusterArn)
-echo $(echo export $MSK_Zookeeper=MSK_Zookeeper)
+echo $(echo export MSK_Zookeeper=$MSK_Zookeeper)
 echo $(echo MSK_Bootstrap_servers=$MSK_Bootstrap_servers)
 
 ### *** option - 2. 747 is just a unique identifier, could be any random number
 # aws ssm put-parameter --name MSKClusterArn747 --type "String" --value  $MSKClusterArn
 # aws ssm put-parameter --name MSK_Zookeeper747 --type "String" --value  $MSK_Zookeeper
 # aws ssm put-parameter --name MSK_Bootstrap_servers747 --type "String" --value  $MSK_Bootstrap_servers
-
-
 aws ssm get-parameter --name "KafkaDemoMSKClusterArn747"
+
+
+## Testing Kafka Cluster Basics. run these commands in SSH Terminal of KafkaClient.
+cd ~/kafka/bin/
+# Creating a New Topic and Deleting it
+./kafka-topics.sh --zookeeper $MSK_Zookeeper --create --topic ExampleTopic --partitions 10 --replication-factor 3
+./kafka-topics.sh --zookeeper $MSK_Zookeeper --create --topic ExampleTopic777 --partitions 10 --replication-factor 3
+./kafka-topics.sh --zookeeper $MSK_Zookeeper --delete --topic ExampleTopic777
+
+# Producer..* * * To Write data to Brokers, using producer sample
+./kafka-console-producer.sh --broker-list $MSK_Bootstrap_servers --topic ExampleTopic
+
+# Consumer. * * * . //Run on another Terminal via SSH
+$KafkaClientEC2InstanceSsh -i ~/environment/temp_ssh_keys/$PROJECT_NAME-sshkey.key    
+
+
+## Copy Paste outputs from Cloud9 Terminal to the Consumer SSH Terminal of Kafla-Client. 
+echo $(echo export MSKClusterArn=$MSKClusterArn)
+echo $(echo export MSK_Zookeeper=$MSK_Zookeeper)
+echo $(echo MSK_Bootstrap_servers=$MSK_Bootstrap_servers)
+
+cd ~/kafka/bin/
+
+./kafka-console-consumer.sh --bootstrap-server $MSK_Bootstrap_servers --topic ExampleTopic
+
+## What you type in Producer Console, will be visible in Consumer Console ... 
+
+
+
 
 ```
 
