@@ -104,8 +104,31 @@ export MSK_Bootstrap_servers=$(aws kafka get-bootstrap-brokers --cluster-arn $MS
 ##SSH to Kafka client
 export KafkaClientEC2InstanceSsh=$(aws cloudformation describe-stacks --stack-name $CFN_TEMPLATE_NAME --query "Stacks[0].Outputs[?OutputKey=='KafkaClientEC2InstanceSsh'].OutputValue" --output text) ; echo $KafkaClientEC2InstanceSsh
 
+## **** Open a new Terminal in cloud9 for ssh to Kafka Client
 $KafkaClientEC2InstanceSsh -i ~/environment/temp_ssh_keys/$PROJECT_NAME-sshkey.key
 
+### !!!! Copy paste the values of these commands from Cloud9 to the Kafka-Client-SSH Terminal.. this is one option.. or we can use Parameter Store
+echo $(echo export MSKClusterArn=$MSKClusterArn)
+echo $(echo export $MSK_Zookeeper=MSK_Zookeeper)
+echo $(echo MSK_Bootstrap_servers=$MSK_Bootstrap_servers)
+
+### *** option - 2. 747 is just a unique identifier, could be any random number
+aws ssm put-parameter --name MSKClusterArn747 --type "String" --value  $MSKClusterArn
+aws ssm put-parameter --name MSK_Zookeeper747 --type "String" --value  $MSK_Zookeeper
+aws ssm put-parameter --name MSK_Bootstrap_servers747 --type "String" --value  $MSK_Bootstrap_servers
+
+
+aws ssm get-parameter --name "KafkaDemoMSKClusterArn747"
+
+```
+
+### Cleanup
+```
+aws ssm delete-parameter --name MSK_Bootstrap_servers747
+aws ssm delete-parameter --name MSK_Zookeeper747
+aws ssm delete-parameter --name MSKClusterArn747
+
+```
 
 
 ```
