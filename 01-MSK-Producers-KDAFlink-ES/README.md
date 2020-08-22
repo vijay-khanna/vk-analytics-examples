@@ -36,15 +36,24 @@ echo -e "\n * * \e[106m ...Project Name to be used is... : "$PROJECT_NAME"\e[0m 
 rm -vf ${HOME}/.aws/credentials
 sudo yum -y install jq gettext
 
+
+aws configure set default.region us-east-1
 export ACCOUNT_ID=$(aws sts get-caller-identity --output text --query Account)
 export AWS_REGION=$(curl -s 169.254.169.254/latest/dynamic/instance-identity/document | jq -r '.region')
 echo -e " * * \e[106m ...AWS_REGION... : "$AWS_REGION"\e[0m \n"
 echo -e " * * \e[106m ...ACCOUNT_ID... : "$ACCOUNT_ID"\e[0m \n"
+aws configure set default.region us-east-1
 
 
 ## Creating a Key for ssh 
 mkdir ~/environment/temp_ssh_keys
-ssh-keygen -t rsa -N "" -f ~/environment/temp_ssh_keys/$PROJECT_NAME-ssh-key.key
+ssh-keygen -t rsa -N "" -f ~/environment/temp_ssh_keys/$PROJECT_NAME-sshkey.key
+
+echo -e " * * \e[106m ...The Key Name to be created is... : "$PROJECT_NAME-sshkey"\e[0m"
+
+### aws ec2 delete-key-pair --key-name $PROJECT_NAME-sshkey        // Take care while using this command, as it will delete the old keypair
+aws ec2 import-key-pair --key-name $PROJECT_NAME-sshkey --public-key-material file://~/environment/temp_ssh_keys/$PROJECT_NAME-sshkey.key.pub
+
 
 
 
