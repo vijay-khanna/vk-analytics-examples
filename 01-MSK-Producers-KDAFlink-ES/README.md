@@ -88,13 +88,27 @@ aws cloudformation describe-stacks --stack-name $CFN_TEMPLATE_NAME
 
 ```
 ## Testing the MSK Simple Producer and Consumer commands
-
+Reference to basic CRUD commands : https://amazonmsk-labs.workshop.aws/en/commontasks/kafkacrud.html
+```
+## Exporting some important variables
 export MSKClusterArn=$(aws cloudformation describe-stacks --stack-name $CFN_TEMPLATE_NAME --query "Stacks[0].Outputs[?OutputKey=='MSKClusterArn'].OutputValue" --output text) ; echo $MSKClusterArn
 
 export MSK_Zookeeper=$(aws kafka describe-cluster --cluster-arn $MSKClusterArn --output json | jq ".ClusterInfo.ZookeeperConnectString") ; echo $MSK_Zookeeper
 
 export MSK_Bootstrap_servers=$(aws kafka get-bootstrap-brokers --cluster-arn $MSKClusterArn --output json | jq ".BootstrapBrokerString") ; echo $MSK_Bootstrap_servers
 
+
+
+
+
+##SSH to Kafka client
+export KafkaClientEC2InstanceSsh=$(aws cloudformation describe-stacks --stack-name $CFN_TEMPLATE_NAME --query "Stacks[0].Outputs[?OutputKey=='KafkaClientEC2InstanceSsh'].OutputValue" --output text) ; echo $KafkaClientEC2InstanceSsh
+
+$KafkaClientEC2InstanceSsh -i ~/environment/temp_ssh_keys/$PROJECT_NAME-sshkey.key
+
+
+
+```
 
 
 
