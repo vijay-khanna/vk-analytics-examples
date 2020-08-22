@@ -7,7 +7,9 @@ Better Option is to Deploy this Stack first, so that the Cloud9 Instance is crea
 
 * * Create a Temporary Keypair Manually before hand, and save the private-key.pem file . Mention this Private key for the CloudFormation Template. 
 
-Deploy the CloudFormation Template : https://raw.githubusercontent.com/vijay-khanna/vk-analytics-examples/master/01-MSK-Producers-KDAFlink-ES/resources/MSKFlinkPrivateWithWinc9.yml
+Deploy the CloudFormation Template : 
+
+https://raw.githubusercontent.com/vijay-khanna/vk-analytics-examples/master/01-MSK-Producers-KDAFlink-ES/resources/MSKFlinkPrivateWithWinc9-3.yml
 
 
 ```
@@ -195,6 +197,7 @@ cd ~/kafka/bin/
 # Reference for Maven Basic install : https://docs.aws.amazon.com/cloud9/latest/user-guide/sample-java.html
 # update java to 1.8
 
+## On Cloud 9 Terminal Console
 sudo yum -y update
 
 sudo yum -y install java-1.8.0-openjdk-devel
@@ -209,13 +212,11 @@ sudo update-alternatives --config javac
 java -version
 javac -version
 
-mkdir ~/environment/kafka-producer
-cd ~/environment/kafka-producer
+mkdir ~/environment/kafka-producer ; cd ~/environment/kafka-producer
 
 # Basic check of Java
 cp ~/environment/vk-analytics-examples/01-MSK-Producers-KDAFlink-ES/resources/helloWorld.java .
-javac helloWorld.java
-java helloWorld 5 9
+javac helloWorld.java ; java helloWorld 5 9
 
 
 # MVN Install
@@ -229,15 +230,25 @@ mvn -version
 mvn archetype:generate -DgroupId=com.mycompany.app -DartifactId=kafka-producer-app -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
 
 
+
 cd ~/environment/kafka-producer/kafka-producer-app/
 cp ~/environment/vk-analytics-examples/01-MSK-Producers-KDAFlink-ES/resources/sampleset.txt /tmp
+cp ~/environment/vk-analytics-examples/01-MSK-Producers-KDAFlink-ES/resources/pom.xml .
+cp ~/environment/vk-analytics-examples/01-MSK-Producers-KDAFlink-ES/resources/TestProducer.java ~/environment/kafka-producer/kafka-producer-app/src/main/java/com/mycompany/app/
 
 
-### On KafkaClient SSH Terminal
+
+mvn package
+
+
+java -cp target/kafka-producer-app-1.0-SNAPSHOT.jar TestProdeucer $MSK_Bootstrap_servers 100 1000
+
+
+
+
+
+### On KafkaClient Producer SSH Terminal
 ./kafka-topics.sh --zookeeper $MSK_Zookeeper --create --topic stock_topic --partitions 3 --replication-factor 3
-
-
-
 
 
 ```
@@ -260,33 +271,3 @@ aws ssm delete-parameter --name MSK_Zookeeper747
 aws ssm delete-parameter --name MSKClusterArn747
 
 ```
-
-
-```
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
