@@ -27,8 +27,8 @@ Create a **new environment** e.g. "Cloud9 Lab" <br/>
 
 * **Capture Cluster Unique Name. This Name will be used to create a ssh key pair as well:**
 ```
-read -p "Enter a unique EKS cluster Name : " EKS_CLUSTER_NAME ; 
-echo -e "\n * * \e[106m ...EKS Cluster Name to be used is... : "$EKS_CLUSTER_NAME"\e[0m \n"
+read -p "Enter a unique cluster Name : " EKS_CLUSTER_NAME ; 
+echo -e "\n * * \e[106m ...Cluster Name to be used is... : "$CLUSTER_NAME"\e[0m \n"
 
 ```
 
