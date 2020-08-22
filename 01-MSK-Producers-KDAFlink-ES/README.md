@@ -1,4 +1,4 @@
-This walkthrough will walkthrough : create a MSK Cluster, Simple Producer/Consumer Commands, Custom Kakfa-Producer, Kinesis Analytics App using Flink, Push Data to Elastisearch and visualize in Kibana
+This walkthrough will walkthrough : Create a MSK Cluster, Simple Producer/Consumer Commands, Custom Kakfa-Producer, Kinesis Analytics App using Flink, Push Data to Elastisearch and visualize in Kibana
 
 This lab documentation is made for N.Virginia region (us-east-1). Please make note of this, and change accordingly for your deployment.
 
@@ -31,6 +31,29 @@ read -p "Enter a unique EKS cluster Name : " EKS_CLUSTER_NAME ;
 echo -e "\n * * \e[106m ...EKS Cluster Name to be used is... : "$EKS_CLUSTER_NAME"\e[0m \n"
 
 ```
+
+### Deploy MSK Stack:
+1. Note your Public IP using a browser: http://checkip.amazonaws.com/
+
+2. Deploy the CFN Stack to create MSK Cluster and ES Cluster. <br/>
+(This CFN is inspired from : https://amazonmsk-labs.workshop.aws/en/mskkdaflinklab/overview.html) 
+This stack adds a new Windows instance in public subnet for accessing the kibana dashboard
+
+Specify the Stack name as "MSKFlinkES_KafkaCustomProducer"
+Select a KeyName (if not exist, create a new one in the region, and save the private-key on laptop)
+Specify the SSH location : use the PublicIP/32 i.e. "1.2.3.4/32"
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
