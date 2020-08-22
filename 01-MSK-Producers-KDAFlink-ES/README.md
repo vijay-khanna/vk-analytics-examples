@@ -243,6 +243,7 @@ mvn package
 
 java -cp target/KafkaProducerSample-0.0.1-SNAPSHOT-jar-with-dependencies.jar TestProducer $MSK_Bootstrap_servers stock_topic 100 1000
 
+## Sample KDG App : https://github.com/avrsanjay/Kafka-Data-Generator
 
 
 ### On KafkaClient Producer SSH Terminal
@@ -261,6 +262,51 @@ cd ~/kafka/bin/
 ### Prometheus and Kibana demo
 ```
 # Reference : https://amazonmsk-labs.workshop.aws/en/openmonitoring/overview.html
+# https://amazonmsk-labs.workshop.aws/en/openmonitoring/prep.html
+
+### Enable "Enhanced topic-level monitoring", "Enable open monitoring with Prometheus", "Prometheus exporters = JMX EXporter and Node Exporter"
+
+## Create a New Security Group "MSK_Monitoring", Allow All-Ports from this Security Gropup to Itself
+## Add this Security Group to the Cloud9, and the KafkaClient instance
+
+
+## on Cloud 9 Console
+mkdir ~/environment/prometheus ; cd ~/environment/prometheus
+
+cp ~/environment/vk-analytics-examples/01-MSK-Producers-KDAFlink-ES/resources/prometheus.yml .
+cat ~/environment/prometheus/prometheus.yml
+
+
+cp ~/environment/vk-analytics-examples/01-MSK-Producers-KDAFlink-ES/resources/targets.json .
+temp_id="$( cut -d ',' -f 1 <<< "$MSK_Bootstrap_servers" )"; echo $temp_id
+temp_id_bkp="$( cut -d ',' -f 1 <<< "$MSK_Bootstrap_servers" )"; echo $temp_id_bkp
+temp_id="$( cut -d ':' -f 1 <<< "$temp_id" )"; echo "$temp_id"
+temp_id="${temp_id:3}" ; echo $temp_id
+
+temp_id_1=b-1$temp_id ; echo $temp_id_1
+temp_id_2=b-2$temp_id ; echo $temp_id_2
+temp_id_3=b-3$temp_id ; echo $temp_id_3
+
+sed -e "s/broker_dns_1/${temp_id_1}/g" ~/environment/prometheus/targets.json > ~/environment/prometheus/targets.json.tmp && mv ~/environment/prometheus/targets.json.tmp ~/environment/prometheus/targets.json
+sed -e "s/broker_dns_2/${temp_id_2}/g" ~/environment/prometheus/targets.json > ~/environment/prometheus/targets.json.tmp && mv ~/environment/prometheus/targets.json.tmp ~/environment/prometheus/targets.json
+sed -e "s/broker_dns_3/${temp_id_3}/g" ~/environment/prometheus/targets.json > ~/environment/prometheus/targets.json.tmp && mv ~/environment/prometheus/targets.json.tmp ~/environment/prometheus/targets.json
+
+cat ~/environment/prometheus/targets.json
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ```
 
 ### Cleanup
