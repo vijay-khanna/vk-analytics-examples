@@ -241,15 +241,14 @@ cp ~/environment/vk-analytics-examples/01-MSK-Producers-KDAFlink-ES/resources/Te
 mvn package
 
 
-java -cp target/kafka-producer-app-1.0-SNAPSHOT.jar TestProdeucer $MSK_Bootstrap_servers 100 1000
-
-
+java -cp target/KafkaProducerSample-0.0.1-SNAPSHOT-jar-with-dependencies.jar TestProducer $MSK_Bootstrap_servers stock_topic 100 1000
 
 
 
 ### On KafkaClient Producer SSH Terminal
-./kafka-topics.sh --zookeeper $MSK_Zookeeper --create --topic stock_topic --partitions 3 --replication-factor 3
-
+##./kafka-topics.sh --zookeeper $MSK_Zookeeper --create --topic stock_topic --partitions 3 --replication-factor 3
+cd ~/kafka/bin/
+./kafka-console-consumer.sh --bootstrap-server $MSK_Bootstrap_servers --topic stock_topic
 
 ```
 
