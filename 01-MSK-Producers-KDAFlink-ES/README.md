@@ -30,6 +30,29 @@ Create a **new environment** e.g. "Cloud9 Lab" <br/>
 read -p "Enter a unique cluster Name (in plain-text, no special characters) : " PROJECT_NAME ; 
 echo -e "\n * * \e[106m ...Project Name to be used is... : "$PROJECT_NAME"\e[0m \n"
 
+
+
+## Some  House Keeping and Tools
+rm -vf ${HOME}/.aws/credentials
+sudo yum -y install jq gettext
+
+export ACCOUNT_ID=$(aws sts get-caller-identity --output text --query Account)
+export AWS_REGION=$(curl -s 169.254.169.254/latest/dynamic/instance-identity/document | jq -r '.region')
+echo -e " * * \e[106m ...AWS_REGION... : "$AWS_REGION"\e[0m \n"
+echo -e " * * \e[106m ...ACCOUNT_ID... : "$ACCOUNT_ID"\e[0m \n"
+
+
+## Creating a Key for ssh 
+mkdir ~/environment/temp_ssh_keys
+ssh-keygen -t rsa -N "" -f ~/environment/temp_ssh_keys/$PROJECT_NAME-ssh-key.key
+
+
+
+
+
+
+
+
 ```
 
 ### Deploy MSK Stack:
@@ -42,6 +65,8 @@ git clone https://github.com/vijay-khanna/vk-analytics-examples.git
 
 DATE_TODAY=`date +%Y-%m-%d`
 CFN_TEMPLATE_NAME=$PROJECT_NAME-$DATE_TODAY ; echo $CFN_TEMPLATE_NAME
+cd ~/environment/vk-analytics-examples/01-MSK-Producers-KDAFlink-ES/
+
 
 
 ```
