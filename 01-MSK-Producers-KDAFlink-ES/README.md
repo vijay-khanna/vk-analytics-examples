@@ -160,11 +160,71 @@ cd ~/kafka/bin/
 
 ./kafka-console-consumer.sh --bootstrap-server $MSK_Bootstrap_servers --topic ExampleTopic
 
-## What you type in Producer Console, will be visible in Consumer Console ... 
+## Whatever we type in Producer Console in > prompt, will be visible in Consumer Console ... 
+
+```
+
+### Kafka Producer, using Java JDK
+```
+# Reference for Maven Basic install : https://docs.aws.amazon.com/cloud9/latest/user-guide/sample-java.html
+# update java to 1.8
+
+sudo yum -y update
+
+sudo yum -y install java-1.8.0-openjdk-devel
+
+## Switch or upgrade the default Java development toolset to OpenJDK 8. To do this, run the update-alternatives command with the --config option. Run this command twice to switch or upgrade the command line versions of the Java runner and compiler.
+
+sudo update-alternatives --config java      
+
+sudo update-alternatives --config javac
+
+# Validate
+java -version
+javac -version
+
+mkdir ~/environment/kafka-producer
+cd ~/environment/kafka-producer
+
+# Basic check of Java
+cp ~/environment/vk-analytics-examples/01-MSK-Producers-KDAFlink-ES/resources/helloWorld.java .
+javac helloWorld.java
+java helloWorld 5 9
+
+
+# MVN Install
+sudo wget http://repos.fedorapeople.org/repos/dchen/apache-maven/epel-apache-maven.repo -O /etc/yum.repos.d/epel-apache-maven.repo
+sudo sed -i s/\$releasever/6/g /etc/yum.repos.d/epel-apache-maven.repo
+sudo yum install -y apache-maven
+
+mvn -version
+
+# Create Structure
+mvn archetype:generate -DgroupId=com.mycompany.app -DartifactId=kafka-producer-app -DarchetypeArtifactId=maven-archetype-quickstart -DinteractiveMode=false
+
+
+cd ~/environment/kafka-producer/kafka-producer-app/
+cp ~/environment/vk-analytics-examples/01-MSK-Producers-KDAFlink-ES/resources/sampleset.txt /tmp
+
+
+### On KafkaClient SSH Terminal
+./kafka-topics.sh --zookeeper $MSK_Zookeeper --create --topic stock_topic --partitions 3 --replication-factor 3
 
 
 
 
+
+```
+
+## Advanced use case, Flink data to Elastisearch 
+```
+# Reference : https://amazonmsk-labs.workshop.aws/en/mskkdaflinklab/runproducer.html
+
+```
+
+### Prometheus and Kibana demo
+```
+# Reference : https://amazonmsk-labs.workshop.aws/en/openmonitoring/overview.html
 ```
 
 ### Cleanup
