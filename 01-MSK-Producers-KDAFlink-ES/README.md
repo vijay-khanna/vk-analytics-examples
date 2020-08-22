@@ -33,6 +33,13 @@ echo -e "\n * * \e[106m ...Cluster Name to be used is... : "$CLUSTER_NAME"\e[0m 
 ```
 
 ### Deploy MSK Stack:
+```
+# Clone the Repo 
+cd ~/environment
+## Remove existing Repo if exist. ###rm -rf ~/environment/vk-analytics-examples
+git clone https://github.com/vijay-khanna/vk-analytics-examples.git
+
+```
 1. Note your Public IP using a browser: http://checkip.amazonaws.com/
 
 2. Deploy the CFN Stack to create MSK Cluster and ES Cluster. <br/>
