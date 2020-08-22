@@ -25,10 +25,10 @@ Create a **new environment** e.g. "Cloud9 Lab" <br/>
 >#**In Cloud9 console => Preferences(Gear Icon on Upper Right Corner) => AWS Settings => Disable "AWS Managed Temporary Credentials. Slide the Grey button to cover Green area. Green area should not be visible** :relaxed:  <br/>
 
 
-* **Capture Cluster Unique Name. This Name will be used to create a ssh key pair as well:**
+* **Capture a Unique Name for Project. This Name will be used to create a ssh key pair as well:**
 ```
-read -p "Enter a unique cluster Name : " EKS_CLUSTER_NAME ; 
-echo -e "\n * * \e[106m ...Cluster Name to be used is... : "$CLUSTER_NAME"\e[0m \n"
+read -p "Enter a unique cluster Name (in plain-text, no special characters) : " PROJECT_NAME ; 
+echo -e "\n * * \e[106m ...Project Name to be used is... : "$PROJECT_NAME"\e[0m \n"
 
 ```
 
@@ -38,6 +38,11 @@ echo -e "\n * * \e[106m ...Cluster Name to be used is... : "$CLUSTER_NAME"\e[0m 
 cd ~/environment
 ## Remove existing Repo if exist. ###rm -rf ~/environment/vk-analytics-examples
 git clone https://github.com/vijay-khanna/vk-analytics-examples.git
+
+
+DATE_TODAY=`date +%Y-%m-%d`
+CFN_TEMPLATE_NAME=$PROJECT_NAME-$DATE_TODAY ; echo $CFN_TEMPLATE_NAME
+
 
 ```
 1. Note your Public IP using a browser: http://checkip.amazonaws.com/
