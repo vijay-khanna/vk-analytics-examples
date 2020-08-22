@@ -5,6 +5,7 @@ This lab documentation is made for N.Virginia region (us-east-1). Please make no
 ### Deploy MSK Stack:
 Better Option is to Deploy this Stack first, so that the Cloud9 Instance is created in same temporary VPC to allow access and Routing
 
+* * Create a Temporary Keypair Manually before hand, and save the private-key.pem file . Mention this Private key for the CloudFormation Template. 
 
 Deploy the CloudFormation Template : https://raw.githubusercontent.com/vijay-khanna/vk-analytics-examples/master/01-MSK-Producers-KDAFlink-ES/resources/MSKFlinkPrivateWithWinc9.yml
 
@@ -75,13 +76,16 @@ echo "export ACCOUNT_ID=${ACCOUNT_ID}" >> ~/.bash_profile
 
 ## Creating a Key for ssh 
 mkdir ~/environment/temp_ssh_keys
-ssh-keygen -t rsa -N "" -f ~/environment/temp_ssh_keys/$PROJECT_NAME-sshkey.key
-echo -e " * * \e[106m ...The Key Name to be created is... : "$PROJECT_NAME-sshkey"\e[0m"
-echo "export SSH_KEY=$PROJECT_NAME-sshkey" >> ~/.bash_profile
+
+###ssh-keygen -t rsa -N "" -f ~/environment/temp_ssh_keys/$PROJECT_NAME-sshkey.key
+####echo -e " * * \e[106m ...The Key Name to be created is... : "$PROJECT_NAME-sshkey"\e[0m"
+###echo "export SSH_KEY=$PROJECT_NAME-sshkey" >> ~/.bash_profile
+
+nano ~/environment/temp_ssh_keys/$PROJECT_NAME-sshkey.key
 
 
 ### aws ec2 delete-key-pair --key-name $PROJECT_NAME-sshkey        // Take care while using this command, as it will delete the old keypair
-aws ec2 import-key-pair --key-name $PROJECT_NAME-sshkey --public-key-material file://~/environment/temp_ssh_keys/$PROJECT_NAME-sshkey.key.pub
+###aws ec2 import-key-pair --key-name $PROJECT_NAME-sshkey --public-key-material file://~/environment/temp_ssh_keys/$PROJECT_NAME-sshkey.key.pub
 
 
 ```
@@ -93,25 +97,31 @@ aws ec2 import-key-pair --key-name $PROJECT_NAME-sshkey --public-key-material fi
 Reference to basic CRUD commands : https://amazonmsk-labs.workshop.aws/en/commontasks/kafkacrud.html
 ```
 ## Exporting some important variables
-export MSKClusterArn=$(aws cloudformation describe-stacks --stack-name $CFN_TEMPLATE_NAME --query "Stacks[0].Outputs[?OutputKey=='MSKClusterArn'].OutputValue" --output text) ; echo $MSKClusterArn
-echo "export MSKClusterArn=${MSKClusterArn}" >> ~/.bash_profile
 
-export MSK_Zookeeper=$(aws kafka describe-cluster --cluster-arn $MSKClusterArn --output json | jq ".ClusterInfo.ZookeeperConnectString") ; echo $MSK_Zookeeper
-echo "export MSK_Zookeeper=${MSK_Zookeeper}" >> ~/.bash_profile
+export MSKClusterArn=$(aws cloudformation describe-stacks --stack-name $PROJECT_NAME --query "Stacks[0].Outputs[?OutputKey=='MSKClusterArn'].OutputValue" --output text) ; echo $MSKClusterArn
+echo "export MSKClusterArn=${MSKClusterArn}" >> ~/.bash_profile ; export MSKClusterArn=${MSKClusterArn} ; echo "MSKClusterArn=${MSKClusterArn}"
+
+
+export MSK_Zookeeper=$(aws kafka describe-cluster --cluster-arn $MSKClusterArn --output json | jq ".ClusterInfo.ZookeeperConnectString") 
+##echo "export MSK_Zookeeper=${MSK_Zookeeper}" >> ~/.bash_profile
+echo "export MSK_Zookeeper=${MSK_Zookeeper//\"}" >> ~/.bash_profile ; export MSK_Zookeeper=${MSK_Zookeeper//\"}; echo MSK_Zookeeper=$MSK_Zookeeper
+
+
 
 export MSK_Bootstrap_servers=$(aws kafka get-bootstrap-brokers --cluster-arn $MSKClusterArn --output json | jq ".BootstrapBrokerString") ; echo $MSK_Bootstrap_servers
-echo "export MSK_Bootstrap_servers=${MSK_Bootstrap_servers}" >> ~/.bash_profile
-
+##echo "export MSK_Bootstrap_servers=${MSK_Bootstrap_servers}" >> ~/.bash_profile
+echo "export MSK_Bootstrap_servers=${MSK_Bootstrap_servers//\"}" >> ~/.bash_profile ; export MSK_Bootstrap_servers=${MSK_Bootstrap_servers//\"}; echo MSK_Bootstrap_servers=$MSK_Bootstrap_servers
 
 
 
 
 ##SSH to Kafka client
-export KafkaClientEC2InstanceSsh=$(aws cloudformation describe-stacks --stack-name $CFN_TEMPLATE_NAME --query "Stacks[0].Outputs[?OutputKey=='KafkaClientEC2InstanceSsh'].OutputValue" --output text) ; echo $KafkaClientEC2InstanceSsh
+export KafkaClientEC2InstanceSsh=$(aws cloudformation describe-stacks --stack-name $PROJECT_NAME --query "Stacks[0].Outputs[?OutputKey=='KafkaClientEC2InstanceSsh'].OutputValue" --output text) ; echo $KafkaClientEC2InstanceSsh
 
-echo "export KafkaClientEC2InstanceSsh=${KafkaClientEC2InstanceSsh}" >> ~/.bash_profile
+echo "export KafkaClientEC2InstanceSsh=${KafkaClientEC2InstanceSsh}" >> ~/.bash_profile ; echo KafkaClientEC2InstanceSsh=$KafkaClientEC2InstanceSsh
 
 ## **** Open a new Terminal in cloud9 for ssh to Kafka Client
+
 $KafkaClientEC2InstanceSsh -i ~/environment/temp_ssh_keys/$PROJECT_NAME-sshkey.key
 ### !!!! This might have some issues, as Cloud9 can change the Public IP after reboot. In that case manually allow Cloud9's Public IP access to Kafka Client's Security Group.
 
