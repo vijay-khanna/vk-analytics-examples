@@ -29,7 +29,7 @@ Create a **new environment** e.g. "Cloud9 Lab" <br/>
 ```
 read -p "Enter a unique cluster Name (in plain-text, no special characters) : " PROJECT_NAME ; 
 echo -e "\n * * \e[106m ...Project Name to be used is... : "$PROJECT_NAME"\e[0m \n"
-
+echo "export PROJECT_NAME=${PROJECT_NAME}" >> ~/.bash_profile
 
 
 ## Some  House Keeping and Tools
@@ -42,8 +42,10 @@ export ACCOUNT_ID=$(aws sts get-caller-identity --output text --query Account)
 export AWS_REGION=$(curl -s 169.254.169.254/latest/dynamic/instance-identity/document | jq -r '.region')
 echo -e " * * \e[106m ...AWS_REGION... : "$AWS_REGION"\e[0m \n"
 echo -e " * * \e[106m ...ACCOUNT_ID... : "$ACCOUNT_ID"\e[0m \n"
-aws configure set default.region us-east-1
+aws configure set default.region $AWS_REGION
 
+echo "export AWS_REGION=${AWS_REGION}" >> ~/.bash_profile
+echo "export ACCOUNT_ID=${ACCOUNT_ID}" >> ~/.bash_profile
 
 ## Creating a Key for ssh 
 mkdir ~/environment/temp_ssh_keys
@@ -51,8 +53,12 @@ ssh-keygen -t rsa -N "" -f ~/environment/temp_ssh_keys/$PROJECT_NAME-sshkey.key
 
 echo -e " * * \e[106m ...The Key Name to be created is... : "$PROJECT_NAME-sshkey"\e[0m"
 
+echo "export SSH_KEY=$PROJECT_NAME-sshkey" >> ~/.bash_profile
+
+
 ### aws ec2 delete-key-pair --key-name $PROJECT_NAME-sshkey        // Take care while using this command, as it will delete the old keypair
 aws ec2 import-key-pair --key-name $PROJECT_NAME-sshkey --public-key-material file://~/environment/temp_ssh_keys/$PROJECT_NAME-sshkey.key.pub
+
 
 ```
 
@@ -65,12 +71,15 @@ git clone https://github.com/vijay-khanna/vk-analytics-examples.git
 
 
 DATE_TODAY=`date +%Y-%m-%d`
-CFN_TEMPLATE_NAME=$PROJECT_NAME-$DATE_TODAY ; echo $CFN_TEMPLATE_NAME
+export CFN_TEMPLATE_NAME=$PROJECT_NAME-$DATE_TODAY ; echo $CFN_TEMPLATE_NAME
+echo "export CFN_TEMPLATE_NAME=${CFN_TEMPLATE_NAME}" >> ~/.bash_profile
+
 cd ~/environment/vk-analytics-examples/01-MSK-Producers-KDAFlink-ES/
 
 
 my_IP="$(curl http://checkip.amazonaws.com 2>/dev/null)" ; echo $my_IP
 ## Note your Public IP using a browser: http://checkip.amazonaws.com/
+echo "export C9_Public_IP=${my_IP}" >> ~/.bash_profile
 
 ###Deploy the CFN Stack to create MSK Cluster and ES Cluster. <br/>
 ### (This CFN is inspired from : https://amazonmsk-labs.workshop.aws/en/mskkdaflinklab/overview.html) 
@@ -92,10 +101,13 @@ Reference to basic CRUD commands : https://amazonmsk-labs.workshop.aws/en/common
 ```
 ## Exporting some important variables
 export MSKClusterArn=$(aws cloudformation describe-stacks --stack-name $CFN_TEMPLATE_NAME --query "Stacks[0].Outputs[?OutputKey=='MSKClusterArn'].OutputValue" --output text) ; echo $MSKClusterArn
+echo "export MSKClusterArn=${MSKClusterArn}" >> ~/.bash_profile
 
 export MSK_Zookeeper=$(aws kafka describe-cluster --cluster-arn $MSKClusterArn --output json | jq ".ClusterInfo.ZookeeperConnectString") ; echo $MSK_Zookeeper
+echo "export MSK_Zookeeper=${MSK_Zookeeper}" >> ~/.bash_profile
 
 export MSK_Bootstrap_servers=$(aws kafka get-bootstrap-brokers --cluster-arn $MSKClusterArn --output json | jq ".BootstrapBrokerString") ; echo $MSK_Bootstrap_servers
+echo "export MSK_Bootstrap_servers=${MSK_Bootstrap_servers}" >> ~/.bash_profile
 
 
 
@@ -104,8 +116,11 @@ export MSK_Bootstrap_servers=$(aws kafka get-bootstrap-brokers --cluster-arn $MS
 ##SSH to Kafka client
 export KafkaClientEC2InstanceSsh=$(aws cloudformation describe-stacks --stack-name $CFN_TEMPLATE_NAME --query "Stacks[0].Outputs[?OutputKey=='KafkaClientEC2InstanceSsh'].OutputValue" --output text) ; echo $KafkaClientEC2InstanceSsh
 
+echo "export KafkaClientEC2InstanceSsh=${KafkaClientEC2InstanceSsh}" >> ~/.bash_profile
+
 ## **** Open a new Terminal in cloud9 for ssh to Kafka Client
 $KafkaClientEC2InstanceSsh -i ~/environment/temp_ssh_keys/$PROJECT_NAME-sshkey.key
+### !!!! This might have some issues, as Cloud9 can change the Public IP after reboot. In that case manually allow Cloud9's Public IP access to Kafka Client's Security Group.
 
 ### !!!! Copy paste the values of these commands from Cloud9 to the Kafka-Client-SSH Terminal.. this is one option.. or we can use Parameter Store
 echo $(echo export MSKClusterArn=$MSKClusterArn)
@@ -113,9 +128,9 @@ echo $(echo export $MSK_Zookeeper=MSK_Zookeeper)
 echo $(echo MSK_Bootstrap_servers=$MSK_Bootstrap_servers)
 
 ### *** option - 2. 747 is just a unique identifier, could be any random number
-aws ssm put-parameter --name MSKClusterArn747 --type "String" --value  $MSKClusterArn
-aws ssm put-parameter --name MSK_Zookeeper747 --type "String" --value  $MSK_Zookeeper
-aws ssm put-parameter --name MSK_Bootstrap_servers747 --type "String" --value  $MSK_Bootstrap_servers
+# aws ssm put-parameter --name MSKClusterArn747 --type "String" --value  $MSKClusterArn
+# aws ssm put-parameter --name MSK_Zookeeper747 --type "String" --value  $MSK_Zookeeper
+# aws ssm put-parameter --name MSK_Bootstrap_servers747 --type "String" --value  $MSK_Bootstrap_servers
 
 
 aws ssm get-parameter --name "KafkaDemoMSKClusterArn747"
