@@ -256,6 +256,52 @@ cd ~/kafka/bin/
 ## Advanced use case, Flink data to Elastisearch 
 ```
 # Reference : https://amazonmsk-labs.workshop.aws/en/mskkdaflinklab/runproducer.html
+## On Kinesis Client - Producer SSH Console
+
+cd /tmp/kafka
+nano producer.properties_msk
+#BOOTSTRAP_SERVERS_CONFIG=$MSK_Bootstrap_servers    //Take output from cloud9 Console echo $SchemaRegistryPrivateDNS
+#SCHEMA_REGISTRY_URL_CONFIG=SchemaRegistryPrivateDNS  // From CloudFormation Output
+
+
+cd /tmp/kafka
+nano schema-registry.properties
+#kafkastore.bootstrap.servers = $MSK_Bootstrap_servers
+
+
+sudo systemctl start confluent-schema-registry
+sudo systemctl status confluent-schema-registry
+
+
+
+/home/ec2-user/kafka/bin/kafka-topics.sh --create --zookeeper $MSK_Zookeeper --replication-factor 3 --partitions 3 --topic ExampleTopic
+/home/ec2-user/kafka/bin/kafka-topics.sh --create --zookeeper $MSK_Zookeeper --replication-factor 3 --partitions 3 --topic Departments_Agg
+
+/home/ec2-user/kafka/bin/kafka-topics.sh --create --zookeeper $MSK_Zookeeper --replication-factor 3 --partitions 3 --topic ClickEvents_UserId_Agg_Result
+
+/home/ec2-user/kafka/bin/kafka-topics.sh --create --zookeeper $MSK_Zookeeper --replication-factor 3 --partitions 3 --topic User_Sessions_Aggregates_With_Order_Checkout
+
+
+
+##cd /tmp/kafka
+##java -jar KafkaClickstreamClient-1.0-SNAPSHOT.jar -t ExampleTopic -pfp /tmp/kafka/producer.properties_msk -nt 8 -rf 1800 
+## https://github.com/vijay-khanna/vk-analytics-examples/blob/master/01-MSK-Producers-KDAFlink-ES/resources/KafkaClickstreamClient-1.0-SNAPSHOT.jar
+
+
+## or Try Stocks-Topic on cliud9 Console
+cd ~/environment/kafka-producer/kafka-producer-app/
+java -cp target/KafkaProducerSample-0.0.1-SNAPSHOT-jar-with-dependencies.jar TestProducer $MSK_Bootstrap_servers stock_topic 100 1000
+##https://github.com/vijay-khanna/vk-analytics-examples/blob/master/01-MSK-Producers-KDAFlink-ES/resources/KafkaProducerSample-0.0.1-SNAPSHOT-jar-with-dependencies.jar
+
+
+## On kinesis Data Analytics Console, "Configure"
+## Properties => Edit Group => "Update the BootStrap Servers and zooKeeper Values"
+## Topic = stock_topic
+## Monitoring => Enable CloudWatch => Warn
+## VPC => Select MMVPC
+## Security Group => KDA Security Group
+
+
 
 ```
 
@@ -305,25 +351,6 @@ sudo docker run -d -p 9090:9090 --name=prometheus -v /home/ec2-user/environment/
 ## open Security Group of Cloud9, for port 9090, 3000 to Your_public_IP/32
 #Connect to Cloud9 Instance
 #http://<Cloud9_Public_IP>:9090
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
