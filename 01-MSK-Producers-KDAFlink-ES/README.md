@@ -82,10 +82,20 @@ my_IP="$(curl http://checkip.amazonaws.com 2>/dev/null)" ; echo $my_IP
 
 aws cloudformation create-stack --stack-name $CFN_TEMPLATE_NAME --template-body file://~/environment/vk-analytics-examples/01-MSK-Producers-KDAFlink-ES/resources/cfn-msk.yaml --parameters ParameterKey=KeyName,ParameterValue=$PROJECT_NAME-sshkey ParameterKey=SSHLocation,ParameterValue=$my_IP/32 --capabilities CAPABILITY_NAMED_IAM
 
+## This can take upto 15 minutes to setup. 
 
+aws cloudformation describe-stacks --stack-name $CFN_TEMPLATE_NAME
 
 ```
 ## Testing the MSK Simple Producer and Consumer commands
+
+export MSKClusterArn=$(aws cloudformation describe-stacks --stack-name $CFN_TEMPLATE_NAME --query "Stacks[0].Outputs[?OutputKey=='MSKClusterArn'].OutputValue" --output text) ; echo $MSKClusterArn
+
+export MSK_Zookeeper=$(aws kafka describe-cluster --cluster-arn $MSKClusterArn --output json | jq ".ClusterInfo.ZookeeperConnectString") ; echo $MSK_Zookeeper
+
+export MSK_Bootstrap_servers=$(aws kafka get-bootstrap-brokers --cluster-arn $MSKClusterArn --output json | jq ".BootstrapBrokerString") ; echo $MSK_Bootstrap_servers
+
+
 
 
 
