@@ -10,6 +10,7 @@ Deploy the CloudFormation Template : https://raw.githubusercontent.com/vijay-kha
 
 
 ```
+##**************** SKIP This *****************
 ##my_IP="$(curl http://checkip.amazonaws.com 2>/dev/null)" ; echo $my_IP
 ## Note your Public IP using a browser: http://checkip.amazonaws.com/
 ###echo "export C9_Public_IP=${my_IP}" >> ~/.bash_profile
@@ -38,7 +39,13 @@ Deploy the CloudFormation Template : https://raw.githubusercontent.com/vijay-kha
 
 * **Capture a Unique Name for Project. This Name will be used to create a ssh key pair as well:**
 ```
-read -p "Enter a unique cluster Name (in plain-text, no special characters) : " PROJECT_NAME ; 
+## Read the Project Name from Instance Tag
+TAG_KEY_NAME="Project"
+Cloud9_INSTANCE_ID="`wget -qO- http://instance-data/latest/meta-data/instance-id`" ; echo $Cloud9_INSTANCE_ID
+REGION="`wget -qO- http://instance-data/latest/meta-data/placement/availability-zone | sed -e 's:\([0-9][0-9]*\)[a-z]*\$:\\1:'`"
+PROJECT_NAME="`aws ec2 describe-tags --filters "Name=resource-id,Values=$INSTANCE_ID" "Name=key,Values=$TAG_NAME" --region $REGION --output=text | cut -f5`"
+##echo $PROJECT_NAME
+##read -p "Enter a unique cluster Name (in plain-text, no special characters) : " PROJECT_NAME ; 
 echo -e "\n * * \e[106m ...Project Name to be used is... : "$PROJECT_NAME"\e[0m \n"
 echo "export PROJECT_NAME=${PROJECT_NAME}" >> ~/.bash_profile
 
@@ -47,7 +54,7 @@ cd ~/environment
 ## Remove existing Repo if exist. ###rm -rf ~/environment/vk-analytics-examples
 git clone https://github.com/vijay-khanna/vk-analytics-examples.git
 
-DATE_TODAY=`date +%Y-%m-%d`
+##DATE_TODAY=`date +%Y-%m-%d`
 ##export CFN_TEMPLATE_NAME=$PROJECT_NAME-$DATE_TODAY ; echo $CFN_TEMPLATE_NAME
 ##echo "export CFN_TEMPLATE_NAME=${CFN_TEMPLATE_NAME}" >> ~/.bash_profile
 
@@ -56,7 +63,7 @@ rm -vf ${HOME}/.aws/credentials
 sudo yum -y install jq gettext
 
 
-aws configure set default.region us-east-1
+
 export ACCOUNT_ID=$(aws sts get-caller-identity --output text --query Account)
 export AWS_REGION=$(curl -s 169.254.169.254/latest/dynamic/instance-identity/document | jq -r '.region')
 echo -e " * * \e[106m ...AWS_REGION... : "$AWS_REGION"\e[0m \n"
@@ -69,9 +76,7 @@ echo "export ACCOUNT_ID=${ACCOUNT_ID}" >> ~/.bash_profile
 ## Creating a Key for ssh 
 mkdir ~/environment/temp_ssh_keys
 ssh-keygen -t rsa -N "" -f ~/environment/temp_ssh_keys/$PROJECT_NAME-sshkey.key
-
 echo -e " * * \e[106m ...The Key Name to be created is... : "$PROJECT_NAME-sshkey"\e[0m"
-
 echo "export SSH_KEY=$PROJECT_NAME-sshkey" >> ~/.bash_profile
 
 
