@@ -1,4 +1,4 @@
-This walkthrough will walkthrough : Create a MSK Cluster, Simple Producer/Consumer Commands, Custom Kakfa-Producer, Kinesis Analytics App using Flink, Push Data to Elastisearch and visualize in Kibana
+This will walkthrough : Create a MSK Cluster, Simple Producer/Consumer Commands, Custom Kakfa-Producer, Kinesis Analytics App using Flink, Push Data to Elastisearch and visualize in Kibana
 
 This lab documentation is made for N.Virginia region (us-east-1). Please make note of this, and change accordingly for your deployment.
 
@@ -240,7 +240,7 @@ cp ~/environment/vk-analytics-examples/01-MSK-Producers-KDAFlink-ES/resources/Te
 
 mvn package
 
-
+cd ~/environment/kafka-producer/kafka-producer-app/
 java -cp target/KafkaProducerSample-0.0.1-SNAPSHOT-jar-with-dependencies.jar TestProducer $MSK_Bootstrap_servers stock_topic 100 1000
 
 ## Sample KDG App : https://github.com/avrsanjay/Kafka-Data-Generator
@@ -261,6 +261,7 @@ cd ~/kafka/bin/
 
 ### Prometheus and Kibana demo
 ```
+### Some minor challenge still ~~~~ not working. 
 # Reference : https://amazonmsk-labs.workshop.aws/en/openmonitoring/overview.html
 # https://amazonmsk-labs.workshop.aws/en/openmonitoring/prep.html
 
@@ -275,6 +276,7 @@ mkdir ~/environment/prometheus ; cd ~/environment/prometheus
 
 cp ~/environment/vk-analytics-examples/01-MSK-Producers-KDAFlink-ES/resources/prometheus.yml .
 cat ~/environment/prometheus/prometheus.yml
+
 
 
 cp ~/environment/vk-analytics-examples/01-MSK-Producers-KDAFlink-ES/resources/targets.json .
@@ -292,6 +294,24 @@ sed -e "s/broker_dns_2/${temp_id_2}/g" ~/environment/prometheus/targets.json > ~
 sed -e "s/broker_dns_3/${temp_id_3}/g" ~/environment/prometheus/targets.json > ~/environment/prometheus/targets.json.tmp && mv ~/environment/prometheus/targets.json.tmp ~/environment/prometheus/targets.json
 
 cat ~/environment/prometheus/targets.json
+
+
+# docker ps -a
+# docker rm prometheus
+
+sudo docker run -d -p 9090:9090 --name=prometheus -v /home/ec2-user/environment/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml -v /home/ec2-user/environment/prometheus/targets.json:/etc/prometheus/targets.json prom/prometheus --config.file=/etc/prometheus/prometheus.yml
+
+
+## open Security Group of Cloud9, for port 9090, 3000 to Your_public_IP/32
+#Connect to Cloud9 Instance
+#http://<Cloud9_Public_IP>:9090
+
+
+
+
+
+
+
 
 
 
