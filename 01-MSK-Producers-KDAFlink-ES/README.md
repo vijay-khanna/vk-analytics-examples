@@ -303,6 +303,8 @@ java -cp target/KafkaProducerSample-0.0.1-SNAPSHOT-jar-with-dependencies.jar Tes
 ## Select the Private Subnets 
 ## update..and wait 
 
+##### Run the Application , click the "Run" button
+
 
 
 ```
