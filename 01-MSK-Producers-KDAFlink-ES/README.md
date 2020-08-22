@@ -77,20 +77,23 @@ CFN_TEMPLATE_NAME=$PROJECT_NAME-$DATE_TODAY ; echo $CFN_TEMPLATE_NAME
 cd ~/environment/vk-analytics-examples/01-MSK-Producers-KDAFlink-ES/
 
 
+my_IP="$(curl http://checkip.amazonaws.com 2>/dev/null)" ; echo $my_IP
+## Note your Public IP using a browser: http://checkip.amazonaws.com/
+
+###Deploy the CFN Stack to create MSK Cluster and ES Cluster. <br/>
+### (This CFN is inspired from : https://amazonmsk-labs.workshop.aws/en/mskkdaflinklab/overview.html) 
+####This stack adds a new Windows instance in public subnet for accessing the kibana dashboard
+
+
+##!!! This assumes CAPABILITY_NAMED_IAM as allowed for CloudFormation
+## Refer https://docs.aws.amazon.com/cli/latest/reference/cloudformation/create-stack.html for more details.
+
+aws cloudformation create-stack --stack-name $CFN_TEMPLATE_NAME --template-body file://~/environment/vk-analytics-examples/01-MSK-Producers-KDAFlink-ES/resources/cfn-msk.yaml --parameters ParameterKey=KeyName,ParameterValue=$PROJECT_NAME-sshkey ParameterKey=SSHLocation,ParameterValue=$my_IP/32 --capabilities CAPABILITY_NAMED_IAM
+
+
 
 ```
-1. Note your Public IP using a browser: http://checkip.amazonaws.com/
-
-2. Deploy the CFN Stack to create MSK Cluster and ES Cluster. <br/>
-(This CFN is inspired from : https://amazonmsk-labs.workshop.aws/en/mskkdaflinklab/overview.html) 
-This stack adds a new Windows instance in public subnet for accessing the kibana dashboard
-
-Specify the Stack name as "MSKFlinkES_KafkaCustomProducer"
-Select a KeyName (if not exist, create a new one in the region, and save the private-key on laptop)
-Specify the SSH location : use the PublicIP/32 i.e. "1.2.3.4/32"
-
-
-
+dsds
 
 
 
