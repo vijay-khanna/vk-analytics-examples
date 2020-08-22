@@ -81,8 +81,13 @@ mkdir ~/environment/temp_ssh_keys
 ####echo -e " * * \e[106m ...The Key Name to be created is... : "$PROJECT_NAME-sshkey"\e[0m"
 ###echo "export SSH_KEY=$PROJECT_NAME-sshkey" >> ~/.bash_profile
 
-nano ~/environment/temp_ssh_keys/$PROJECT_NAME-sshkey.key
+# Edit the Temporary Key Created Earlier, and Copy the content to the new file
+# -----BEGIN RSA PRIVATE KEY-----
+# to
+# -----END RSA PRIVATE KEY-----
 
+nano ~/environment/temp_ssh_keys/$PROJECT_NAME-sshkey.key
+chmod 400 ~/environment/temp_ssh_keys/$PROJECT_NAME-sshkey.key
 
 ### aws ec2 delete-key-pair --key-name $PROJECT_NAME-sshkey        // Take care while using this command, as it will delete the old keypair
 ###aws ec2 import-key-pair --key-name $PROJECT_NAME-sshkey --public-key-material file://~/environment/temp_ssh_keys/$PROJECT_NAME-sshkey.key.pub
@@ -117,10 +122,15 @@ echo "export MSK_Bootstrap_servers=${MSK_Bootstrap_servers//\"}" >> ~/.bash_prof
 
 ##SSH to Kafka client
 export KafkaClientEC2InstanceSsh=$(aws cloudformation describe-stacks --stack-name $PROJECT_NAME --query "Stacks[0].Outputs[?OutputKey=='KafkaClientEC2InstanceSsh'].OutputValue" --output text) ; echo $KafkaClientEC2InstanceSsh
+KafkaClientEC2InstanceSsh="\"${KafkaClientEC2InstanceSsh}\""
+echo $KafkaClientEC2InstanceSsh
 
 echo "export KafkaClientEC2InstanceSsh=${KafkaClientEC2InstanceSsh}" >> ~/.bash_profile ; echo KafkaClientEC2InstanceSsh=$KafkaClientEC2InstanceSsh
 
-## **** Open a new Terminal in cloud9 for ssh to Kafka Client
+
+
+
+## **** Open a new Terminal in cloud9 for ssh to Kafka Client     ##Will lead to KafkaClient_SSH_Terminal
 
 $KafkaClientEC2InstanceSsh -i ~/environment/temp_ssh_keys/$PROJECT_NAME-sshkey.key
 ### !!!! This might have some issues, as Cloud9 can change the Public IP after reboot. In that case manually allow Cloud9's Public IP access to Kafka Client's Security Group.
@@ -129,16 +139,24 @@ $KafkaClientEC2InstanceSsh -i ~/environment/temp_ssh_keys/$PROJECT_NAME-sshkey.k
 ##echo -e " * * \e[106m echo export MSKClusterArn=$MSKClusterArn"\e[0m \n"
 ##echo -e " * * \e[106m ...ACCOUNT_ID... : "$ACCOUNT_ID"\e[0m \n"
 
+
+
+
+##*****Cloud9_Terminal.. Copy Paste these Outputs to Kafka_Terminal
 echo $(echo export MSKClusterArn=$MSKClusterArn)
 echo $(echo export MSK_Zookeeper=$MSK_Zookeeper)
 echo $(echo MSK_Bootstrap_servers=$MSK_Bootstrap_servers)
+
+
 
 ### *** option - 2. 747 is just a unique identifier, could be any random number
 # aws ssm put-parameter --name MSKClusterArn747 --type "String" --value  $MSKClusterArn
 # aws ssm put-parameter --name MSK_Zookeeper747 --type "String" --value  $MSK_Zookeeper
 # aws ssm put-parameter --name MSK_Bootstrap_servers747 --type "String" --value  $MSK_Bootstrap_servers
-aws ssm get-parameter --name "KafkaDemoMSKClusterArn747"
+# aws ssm get-parameter --name "KafkaDemoMSKClusterArn747"
 
+
+##****KafkaClient_SSH_Terminal
 
 ## Testing Kafka Cluster Basics. run these commands in SSH Terminal of KafkaClient.
 cd ~/kafka/bin/
@@ -147,12 +165,16 @@ cd ~/kafka/bin/
 ./kafka-topics.sh --zookeeper $MSK_Zookeeper --create --topic ExampleTopic777 --partitions 10 --replication-factor 3
 ./kafka-topics.sh --zookeeper $MSK_Zookeeper --delete --topic ExampleTopic777
 
+
+##First_KAFKA_TERMINAL will work as  ProducerTerminal
 # Producer..* * * To Write data to Brokers, using producer sample
 ./kafka-console-producer.sh --broker-list $MSK_Bootstrap_servers --topic ExampleTopic
+### Will wait at > Prompt to accept messages, after the Consumer Teminal is Ready, we can enter messages here. 
+
+
 
 # Consumer. * * * . //Run on another Terminal via SSH
 $KafkaClientEC2InstanceSsh -i ~/environment/temp_ssh_keys/$PROJECT_NAME-sshkey.key    
-
 
 ## Copy Paste outputs from Cloud9 Terminal to the Consumer SSH Terminal of Kafla-Client. 
 echo $(echo export MSKClusterArn=$MSKClusterArn)
@@ -160,10 +182,11 @@ echo $(echo export MSK_Zookeeper=$MSK_Zookeeper)
 echo $(echo MSK_Bootstrap_servers=$MSK_Bootstrap_servers)
 
 cd ~/kafka/bin/
-
 ./kafka-console-consumer.sh --bootstrap-server $MSK_Bootstrap_servers --topic ExampleTopic
-
 ## Whatever we type in Producer Console in > prompt, will be visible in Consumer Console ... 
+
+
+
 
 ```
 
