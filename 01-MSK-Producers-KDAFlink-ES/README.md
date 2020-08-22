@@ -300,6 +300,8 @@ java -cp target/KafkaProducerSample-0.0.1-SNAPSHOT-jar-with-dependencies.jar Tes
 ## Monitoring => Enable CloudWatch => Warn
 ## VPC => Select MMVPC
 ## Security Group => KDA Security Group
+## Select the Private Subnets 
+## update..and wait 
 
 
 
