@@ -2,15 +2,26 @@ This walkthrough will walkthrough : Create a MSK Cluster, Simple Producer/Consum
 
 This lab documentation is made for N.Virginia region (us-east-1). Please make note of this, and change accordingly for your deployment.
 
-### Deploy Cloud9 IDE:
-Login to the AWS EC2 Console, go to Cloud9 Services. <br/>
-Create a **new environment** e.g. "Cloud9 Lab" <br/>
->#Select Environment type : "Create a new instance for environment (EC2)<br/>
->#Instance type : t2.micro (1 GiB RAM + 1 vCPU)  <br/>
->#Platform : Amazon Linux <br/>
->#Cost-saving setting: after 30 minutes <br/>
->#Network settings : Select an existing vpc and subnet, or create a new one . Select a Public Subnet, connected to Internet Gateway for Preview-URL Testing <br/>
->#Review, click Create <br/>
+### Deploy MSK Stack:
+Better Option is to Deploy this Stack first, so that the Cloud9 Instance is created in same temporary VPC to allow access and Routing
+
+
+Deploy the CloudFormation Template : https://raw.githubusercontent.com/vijay-khanna/vk-analytics-examples/master/01-MSK-Producers-KDAFlink-ES/resources/MSKFlinkPrivateWithWinc9.yml
+
+
+```
+##my_IP="$(curl http://checkip.amazonaws.com 2>/dev/null)" ; echo $my_IP
+## Note your Public IP using a browser: http://checkip.amazonaws.com/
+###echo "export C9_Public_IP=${my_IP}" >> ~/.bash_profile
+###Deploy the CFN Stack to create MSK Cluster and ES Cluster. <br/>
+### (This CFN is inspired from : https://amazonmsk-labs.workshop.aws/en/mskkdaflinklab/overview.html) 
+####This stack adds a new Windows instance in public subnet for accessing the kibana dashboard
+##!!! This assumes CAPABILITY_NAMED_IAM as allowed for CloudFormation
+## Refer https://docs.aws.amazon.com/cli/latest/reference/cloudformation/create-stack.html for more details.
+###aws cloudformation create-stack --stack-name $CFN_TEMPLATE_NAME --template-body file://~/environment/vk-analytics-examples/01-MSK-Producers-KDAFlink-ES/resources/cfn-msk.yaml --parameters ParameterKey=KeyName,ParameterValue=$PROJECT_NAME-sshkey ParameterKey=SSHLocation,ParameterValue=$my_IP/32 --capabilities CAPABILITY_NAMED_IAM
+## This can take upto 15 minutes to setup. 
+###aws cloudformation describe-stacks --stack-name $CFN_TEMPLATE_NAME
+```
 
 * **IAM AdministratorAccess Role for Cloud9 Instance :**
 >#Go to IAM Service, create a role <br/>
@@ -31,6 +42,14 @@ read -p "Enter a unique cluster Name (in plain-text, no special characters) : " 
 echo -e "\n * * \e[106m ...Project Name to be used is... : "$PROJECT_NAME"\e[0m \n"
 echo "export PROJECT_NAME=${PROJECT_NAME}" >> ~/.bash_profile
 
+# Clone the Repo 
+cd ~/environment
+## Remove existing Repo if exist. ###rm -rf ~/environment/vk-analytics-examples
+git clone https://github.com/vijay-khanna/vk-analytics-examples.git
+
+DATE_TODAY=`date +%Y-%m-%d`
+##export CFN_TEMPLATE_NAME=$PROJECT_NAME-$DATE_TODAY ; echo $CFN_TEMPLATE_NAME
+##echo "export CFN_TEMPLATE_NAME=${CFN_TEMPLATE_NAME}" >> ~/.bash_profile
 
 ## Some  House Keeping and Tools
 rm -vf ${HOME}/.aws/credentials
@@ -62,40 +81,9 @@ aws ec2 import-key-pair --key-name $PROJECT_NAME-sshkey --public-key-material fi
 
 ```
 
-### Deploy MSK Stack:
-```
-# Clone the Repo 
-cd ~/environment
-## Remove existing Repo if exist. ###rm -rf ~/environment/vk-analytics-examples
-git clone https://github.com/vijay-khanna/vk-analytics-examples.git
 
 
-DATE_TODAY=`date +%Y-%m-%d`
-export CFN_TEMPLATE_NAME=$PROJECT_NAME-$DATE_TODAY ; echo $CFN_TEMPLATE_NAME
-echo "export CFN_TEMPLATE_NAME=${CFN_TEMPLATE_NAME}" >> ~/.bash_profile
 
-cd ~/environment/vk-analytics-examples/01-MSK-Producers-KDAFlink-ES/
-
-
-my_IP="$(curl http://checkip.amazonaws.com 2>/dev/null)" ; echo $my_IP
-## Note your Public IP using a browser: http://checkip.amazonaws.com/
-echo "export C9_Public_IP=${my_IP}" >> ~/.bash_profile
-
-###Deploy the CFN Stack to create MSK Cluster and ES Cluster. <br/>
-### (This CFN is inspired from : https://amazonmsk-labs.workshop.aws/en/mskkdaflinklab/overview.html) 
-####This stack adds a new Windows instance in public subnet for accessing the kibana dashboard
-
-
-##!!! This assumes CAPABILITY_NAMED_IAM as allowed for CloudFormation
-## Refer https://docs.aws.amazon.com/cli/latest/reference/cloudformation/create-stack.html for more details.
-
-aws cloudformation create-stack --stack-name $CFN_TEMPLATE_NAME --template-body file://~/environment/vk-analytics-examples/01-MSK-Producers-KDAFlink-ES/resources/cfn-msk.yaml --parameters ParameterKey=KeyName,ParameterValue=$PROJECT_NAME-sshkey ParameterKey=SSHLocation,ParameterValue=$my_IP/32 --capabilities CAPABILITY_NAMED_IAM
-
-## This can take upto 15 minutes to setup. 
-
-aws cloudformation describe-stacks --stack-name $CFN_TEMPLATE_NAME
-
-```
 ## Testing the MSK Simple Producer and Consumer commands
 Reference to basic CRUD commands : https://amazonmsk-labs.workshop.aws/en/commontasks/kafkacrud.html
 ```
