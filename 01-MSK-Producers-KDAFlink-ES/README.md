@@ -1,13 +1,10 @@
 This walkthrough will walkthrough : create a MSK Cluster, Simple Producer/Consumer Commands, Custom Kakfa-Producer, Kinesis Analytics App using Flink, Push Data to Elastisearch and visualize in Kibana
-We will be using us-east-1 as default region for the demo. 
 
-# Step#1 : Deploying MSK Cluster
-Deploy the MSK Cluster using this CloudFormation. 
+This lab documentation is made for N.Virginia region (us-east-1). Please make note of this, and change accordingly for your deployment.
 
 ### Deploy Cloud9 IDE:
-This lab documentation is made for N.Virginia region (us-east-1). Please make note of this, and change accordingly for your deployment.
 Login to the AWS EC2 Console, go to Cloud9 Services. <br/>
-Create a **new environment** e.g. "Cloud9 Lab - Containerized Nodejs application" <br/>
+Create a **new environment** e.g. "Cloud9 Lab" <br/>
 >#Select Environment type : "Create a new instance for environment (EC2)<br/>
 >#Instance type : t2.micro (1 GiB RAM + 1 vCPU)  <br/>
 >#Platform : Amazon Linux <br/>
@@ -34,3 +31,19 @@ read -p "Enter a unique EKS cluster Name : " EKS_CLUSTER_NAME ;
 echo -e "\n * * \e[106m ...EKS Cluster Name to be used is... : "$EKS_CLUSTER_NAME"\e[0m \n"
 
 ```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
