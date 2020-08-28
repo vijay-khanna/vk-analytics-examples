@@ -124,7 +124,7 @@ export MSK_Bootstrap_servers=$(aws kafka get-bootstrap-brokers --cluster-arn $MS
 echo "export MSK_Bootstrap_servers=${MSK_Bootstrap_servers//\"}" >> ~/.bash_profile ; export MSK_Bootstrap_servers=${MSK_Bootstrap_servers//\"}; echo MSK_Bootstrap_servers=$MSK_Bootstrap_servers
 
 
-
+#### Add the Cloud9 Instance Security Group, as allowed in the Kafka client instance Security Group
 
 ##SSH to Kafka client
 export KafkaClientEC2InstanceSsh=$(aws cloudformation describe-stacks --stack-name $PROJECT_NAME --query "Stacks[0].Outputs[?OutputKey=='KafkaClientEC2InstanceSsh'].OutputValue" --output text) ; echo $KafkaClientEC2InstanceSsh
