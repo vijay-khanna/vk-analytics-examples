@@ -43,13 +43,17 @@ https://raw.githubusercontent.com/vijay-khanna/vk-analytics-examples/master/01-M
 * **Capture a Unique Name for Project. This Name will be used to create a ssh key pair as well:**
 ```
 ## Read the Project Name from Instance Tag
-TAG_KEY_NAME="Project"
+export TAG_KEY_NAME="Project"
+export TAG_NAME="Project"
+
 Cloud9_INSTANCE_ID="`wget -qO- http://instance-data/latest/meta-data/instance-id`" ; echo $Cloud9_INSTANCE_ID
 REGION="`wget -qO- http://instance-data/latest/meta-data/placement/availability-zone | sed -e 's:\([0-9][0-9]*\)[a-z]*\$:\\1:'`"
-PROJECT_NAME="`aws ec2 describe-tags --filters "Name=resource-id,Values=$INSTANCE_ID" "Name=key,Values=$TAG_NAME" --region $REGION --output=text | cut -f5`"
-##echo $PROJECT_NAME
+echo $REGION ; export REGION=$REGION
+PROJECT_NAME="`aws ec2 describe-tags --filters "Name=resource-id,Values=$Cloud9_INSTANCE_ID" "Name=key,Values=$TAG_NAME" --region $REGION --output=text | cut -f5`"
+echo $PROJECT_NAME
 ##read -p "Enter a unique cluster Name (in plain-text, no special characters) : " PROJECT_NAME ; 
 echo -e "\n * * \e[106m ...Project Name to be used is... : "$PROJECT_NAME"\e[0m \n"
+
 echo "export PROJECT_NAME=${PROJECT_NAME}" >> ~/.bash_profile
 
 # Clone the Repo 
