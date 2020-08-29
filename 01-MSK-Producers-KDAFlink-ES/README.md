@@ -346,6 +346,81 @@ Create a new crawler, read Parquet data, create new Table
 ```
 
 
+## Reading from CSV/Text on S3 to RDS using Sqoop
+```
+### REF : https://aws.amazon.com/blogs/big-data/use-sqoop-to-transfer-data-from-amazon-emr-to-amazon-rds/
+## use the OnlineSalesProducer to dump data via kafka-kinesis-FH to S3
+Create EMR cluster, ssh to cluster. 
+
+su - hadoop
+
+hive
+
+DROP TABLE IF EXISTS OnlineSalesHive;
+
+CREATE EXTERNAL TABLE OnlineSaleshive( 
+transactiondate STRING,
+Item STRING,
+Location STRING,
+ItemQty STRING,
+ItemPrice STRING
+)
+ROW FORMAT DELIMITED FIELDS TERMINATED BY ','
+LINES TERMINATED BY '\n'
+STORED AS TEXTFILE
+LOCATION 's3://aaa-kafka-vk747/rawfromkafka2020/';
+
+
+
+select * from OnlineSalesHive;
+select * from OnlineSaleshive where Location="Pune";
+
+# create a RDS MySL DB, add necessary security groups and ports for access from EMR
+
+
+mysql -u admin -h <>  -p
+
+CREATE TABLE `OnlineSalesRds` (`transactiondate` varchar(20),`Item` varchar(20), `Location` varchar(20), `ItemQty` varchar(5), `ItemPrice` varchar(5) );
+
+CREATE TABLE OnlineSalesRdsStaging LIKE OnlineSalesRds;
+
+
+##on EMR SSH. Install the JDBC driver
+wget http://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-5.1.38.tar.gz
+tar -xvzf mysql-connector-java-5.1.38.tar.gz
+sudo cp mysql-connector-java-5.1.38/mysql-connector-java-5.1.38-bin.jar /usr/lib/sqoop/lib/
+
+
+##Store encrypted passwords
+hadoop credential create sqoop-blog-rds.password -provider jceks://hdfs/user/hadoop/sqoop-blog-rds.jceks
+
+
+.
+export
+-Dhadoop.security.credential.provider.path=jceks://hdfs/user/hadoop/sqoop-blog-rds.jceks
+--connect
+jdbc:mysql://<<<RDS String/Database>>>
+--username
+admin
+--password-alias
+sqoop-blog-rds.password
+--table
+OnlineSalesRds
+--staging-table
+OnlineSalesRdsStaging
+--fields-terminated-by
+' '
+--export-dir
+s3://<Point to CSV Raw Folder, Which came from kinesis FH//>
+.
+
+
+sqoop --options-file options-file.txt
+
+
+Check the data in RDS : select * from OnlineSalesRds;
+```
+
 
 ## Advanced use case, Flink data to Elastisearch 
 ```
