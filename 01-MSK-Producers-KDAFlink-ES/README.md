@@ -92,7 +92,14 @@ mkdir ~/environment/temp_ssh_keys
 # to
 # -----END RSA PRIVATE KEY-----
 
+
+
 nano ~/environment/temp_ssh_keys/$PROJECT_NAME-sshkey.key
+
+
+
+
+
 chmod 400 ~/environment/temp_ssh_keys/$PROJECT_NAME-sshkey.key
 
 ### aws ec2 delete-key-pair --key-name $PROJECT_NAME-sshkey        // Take care while using this command, as it will delete the old keypair
@@ -153,8 +160,13 @@ $KafkaClientEC2InstanceSsh -i ~/environment/temp_ssh_keys/$PROJECT_NAME-sshkey.k
 
 
 ##*****Cloud9_Terminal.. Copy Paste these Outputs to Kafka_Terminal
+
 echo $(echo export MSKClusterArn=$MSKClusterArn)
+
+
 echo $(echo export MSK_Zookeeper=$MSK_Zookeeper)
+
+
 echo $(echo MSK_Bootstrap_servers=$MSK_Bootstrap_servers)
 
 
@@ -188,8 +200,14 @@ $KafkaClientEC2InstanceSsh -i ~/environment/temp_ssh_keys/$PROJECT_NAME-sshkey.k
 
 ## Copy Paste outputs from Cloud9 Terminal to the Consumer SSH Terminal of Kafla-Client. 
 echo $(echo export MSKClusterArn=$MSKClusterArn)
+
+
 echo $(echo export MSK_Zookeeper=$MSK_Zookeeper)
+
+
 echo $(echo MSK_Bootstrap_servers=$MSK_Bootstrap_servers)
+
+
 
 cd ~/kafka/bin/
 ./kafka-console-consumer.sh --bootstrap-server $MSK_Bootstrap_servers --topic ExampleTopic
