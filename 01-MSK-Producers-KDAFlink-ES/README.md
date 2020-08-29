@@ -186,6 +186,7 @@ cd ~/kafka/bin/
 ./kafka-topics.sh --zookeeper $MSK_Zookeeper --create --topic ExampleTopic --partitions 10 --replication-factor 3
 ./kafka-topics.sh --zookeeper $MSK_Zookeeper --create --topic ExampleTopic777 --partitions 10 --replication-factor 3
 ./kafka-topics.sh --zookeeper $MSK_Zookeeper --delete --topic ExampleTopic777
+./kafka-topics.sh --zookeeper $MSK_Zookeeper --create --topic StockMarket --partitions 1 --replication-factor 3
 
 
 ##First_KAFKA_TERMINAL will work as  ProducerTerminal
