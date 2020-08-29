@@ -274,6 +274,17 @@ java -cp target/KafkaProducerSample-0.0.1-SNAPSHOT-jar-with-dependencies.jar Tes
 ## Sample KDG App : https://github.com/avrsanjay/Kafka-Data-Generator
 
 
+
+
+
+## Try Online Sales Kafka Sample : https://raw.githubusercontent.com/vijay-khanna/vk-analytics-examples/master/01-MSK-Producers-KDAFlink-ES/resources/OnlineSalesProducer.java
+##java -cp target/KafkaProducerSample-0.0.1-SNAPSHOT-jar-with-dependencies.jar OnlineSalesProducer $MSK_Bootstrap_servers OnlineSales 100 1000
+
+
+
+
+
+
 ### On KafkaClient Producer SSH Terminal
 ##./kafka-topics.sh --zookeeper $MSK_Zookeeper --create --topic stock_topic --partitions 3 --replication-factor 3
 cd ~/kafka/bin/
