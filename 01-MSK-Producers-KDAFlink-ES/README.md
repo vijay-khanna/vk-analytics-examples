@@ -320,6 +320,19 @@ vector --config vector.toml
 ```
 
 
+## Glue Crawler to store Table MetaData
+```
+#1
+Create a glue Crawler, and point it to S3 bucket. 
+run the Job. 
+
+Check in some time in Athena for the data.
+
+#2. Create Glue Job, Spark, Convert from JSON to Parquet. 
+Create a new crawler, read Parquet data, create new Table
+
+
+```
 
 
 
