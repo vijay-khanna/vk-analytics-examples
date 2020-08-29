@@ -281,6 +281,47 @@ cd ~/kafka/bin/
 
 
 ```
+## Copy Data from Kafka to Kinesis FireHose (and then to S3)
+```
+1. Create a kinesis Firehose Delivery Stream, dump data to S3. 
+
+
+2. Install the Connector Vector, Specify the Kafka BootStrap Server, and FireHose Stream name
+## Ref : https://vector.dev/guides/integrate/sources/kafka/aws_kinesis_firehose/
+
+curl --proto '=https' --tlsv1.2 -sSf https://sh.vector.dev | sh
+
+3. Configure Vector
+cat <<-VECTORCFG > vector.toml
+[sources.in]
+  bootstrap_servers = "10.14.22.123:9092,10.14.23.332:9092" # required
+  group_id = "consumer-group-name" # required
+  topics = ["^(prefix1|prefix2)-.+", "topic-1", "topic-2"] # required
+  type = "kafka" # required
+
+[sinks.out]
+  # Encoding
+  encoding.codec = "json" # required
+
+  # General
+  inputs = ["in"] # required
+  region = "us-east-1" # required, required when endpoint = ""
+  stream_name = "my-stream" # required
+  type = "aws_kinesis_firehose" # required
+VECTORCFG
+
+
+### Replace the bootstrap server, and stream_name, region 
+4. Start vector
+vector --config vector.toml
+
+5. Check in firehose monitoring and in S3 for logs. 
+
+```
+
+
+
+
 
 ## Advanced use case, Flink data to Elastisearch 
 ```
