@@ -167,7 +167,7 @@ echo $(echo export MSKClusterArn=$MSKClusterArn)
 echo $(echo export MSK_Zookeeper=$MSK_Zookeeper)
 
 
-echo $(echo MSK_Bootstrap_servers=$MSK_Bootstrap_servers)
+echo $(echo export MSK_Bootstrap_servers=$MSK_Bootstrap_servers)
 
 
 
