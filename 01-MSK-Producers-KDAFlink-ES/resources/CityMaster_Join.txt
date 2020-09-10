@@ -1,0 +1,14 @@
+CREATE TABLE CityMaster (
+    CM_City varchar(255),
+    CM_State varchar(255),
+    CM_Population_Mn varchar(255),
+    CM_Lat varchar(255)
+);
+
+INSERT INTO CityMaster ( ) VALUES ('Mumbai','Maharashtra','50','22');
+
+INSERT INTO CityMaster (CM_City,CM_State,CM_Population_Mn,CM_Lat) VALUES ('Mumbai','Maharashtra','50','22');
+INSERT INTO CityMaster (CM_City,CM_State,CM_Population_Mn,CM_Lat) VALUES ('Pune','Maharashtra','35','19');
+INSERT INTO CityMaster (CM_City,CM_State,CM_Population_Mn,CM_Lat) VALUES ('Bangalore','Karnataka','44','20');
+
+select * from CityMaster ;
